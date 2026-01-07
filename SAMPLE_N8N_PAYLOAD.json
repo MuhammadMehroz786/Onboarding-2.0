@@ -1,0 +1,94 @@
+{
+  "uniqueClientId": "CL-KZ1HTJQ2-F3K7OVZ",
+  "clientId": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "john@acmecorp.com",
+  "companyName": "Acme Corp",
+  "industry": "SaaS",
+  "websiteUrl": "https://acme.com",
+  "onboardingData": {
+    "businessInfo": {
+      "companyName": "Acme Corp",
+      "industry": "SaaS",
+      "websiteUrl": "https://acme.com",
+      "companyDescription": "B2B SaaS platform for project management",
+      "employeeCount": "11-50",
+      "businessModel": "B2B"
+    },
+    "marketingState": {
+      "workedWithAgency": true,
+      "currentChannels": [
+        "Paid Search",
+        "Paid Social",
+        "Content Marketing",
+        "Email Marketing"
+      ],
+      "marketingFeedback": "Previous agency didn't deliver on lead quality promises. We need better ROI tracking.",
+      "primaryChallenges": [
+        "High CAC",
+        "Low Lead Quality",
+        "Can't track ROI"
+      ]
+    },
+    "analytics": {
+      "hasGoogleAnalytics": "Yes",
+      "hasFacebookPixel": "Yes",
+      "trackingTools": [
+        "GA4",
+        "Google Tag Manager",
+        "HubSpot"
+      ],
+      "canProvideAnalyticsAccess": "Yes",
+      "analyticsNotes": "GA4 setup is incomplete, need help with conversion tracking"
+    },
+    "socialMedia": {
+      "socialPlatforms": {
+        "Facebook": {
+          "handle": "@acmecorp",
+          "canProvideAccess": "Yes"
+        },
+        "Instagram": {
+          "handle": "@acme",
+          "canProvideAccess": "Yes"
+        },
+        "LinkedIn": {
+          "handle": "acme-corp",
+          "canProvideAccess": "Yes"
+        }
+      },
+      "hasFbBusinessManager": "Yes",
+      "hasGoogleAds": "Yes"
+    },
+    "goals": {
+      "primaryGoal": "Generate 100 qualified leads per month within 90 days",
+      "successDefinition": "20% increase in demo bookings, CAC under $150, improve lead quality score",
+      "keyMetrics": [
+        "Lead volume",
+        "Cost per lead",
+        "Revenue",
+        "Traffic"
+      ],
+      "revenueTarget": "$2M",
+      "targetCpa": "$150",
+      "targetRoas": "4"
+    },
+    "audience": {
+      "idealCustomerProfile": "CTOs and VP of Engineering at 50-200 employee tech companies, struggling with legacy project management tools, budget $10k-50k/year",
+      "geographicTargeting": "North America",
+      "ageRange": "30-50",
+      "genderTargeting": "All",
+      "competitors": [
+        "https://asana.com",
+        "https://monday.com",
+        "https://clickup.com"
+      ],
+      "competitorStrengths": "Asana has strong brand recognition and enterprise trust. Monday.com has excellent UI/UX. ClickUp offers comprehensive features at low cost."
+    },
+    "budget": {
+      "monthlyBudgetRange": "$5,000 - $10,000",
+      "hasCreativeAssets": true,
+      "hasMarketingContact": true,
+      "marketingContactName": "Sarah Johnson",
+      "marketingContactEmail": "sarah@acme.com"
+    }
+  }
+}

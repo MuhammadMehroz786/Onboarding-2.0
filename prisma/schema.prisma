@@ -1,0 +1,195 @@
+// Onboarding Automation - Prisma Schema
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =====================================================
+// USERS TABLE (Authentication)
+// =====================================================
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("client") // 'client' or 'admin'
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  lastLogin    DateTime? @map("last_login")
+
+  // Relations
+  client       Client?
+  activityLogs ActivityLog[]
+
+  @@map("users")
+}
+
+// =====================================================
+// CLIENTS TABLE (Business Information & Onboarding Data)
+// =====================================================
+model Client {
+  id              String   @id @default(uuid())
+  userId          String   @unique @map("user_id")
+  uniqueClientId  String   @unique @map("unique_client_id")
+
+  // Step 1: Business Fundamentals
+  companyName        String  @map("company_name")
+  industry           String
+  websiteUrl         String? @map("website_url")
+  companyDescription String? @map("company_description") @db.Text
+  employeeCount      String? @map("employee_count")
+  businessModel      String? @map("business_model")
+
+  // Step 2: Marketing State
+  workedWithAgency   Boolean? @map("worked_with_agency")
+  currentChannels    Json?    @map("current_channels")
+  marketingFeedback  String?  @map("marketing_feedback") @db.Text
+  primaryChallenges  Json?    @map("primary_challenges")
+
+  // Step 3: Analytics & Tracking
+  hasGoogleAnalytics         String? @map("has_google_analytics")
+  hasFacebookPixel           String? @map("has_facebook_pixel")
+  trackingTools              Json?   @map("tracking_tools")
+  canProvideAnalyticsAccess  String? @map("can_provide_analytics_access")
+  analyticsNotes             String? @map("analytics_notes") @db.Text
+
+  // Step 4: Social Media & Platforms
+  socialPlatforms       Json?   @map("social_platforms")
+  hasFbBusinessManager  String? @map("has_fb_business_manager")
+  hasGoogleAds          String? @map("has_google_ads")
+
+  // Step 5: Goals & Objectives
+  primaryGoal       String  @map("primary_goal") @db.Text
+  successDefinition String? @map("success_definition") @db.Text
+  keyMetrics        Json?   @map("key_metrics")
+  revenueTarget     String? @map("revenue_target")
+  targetCpa         String? @map("target_cpa")
+  targetRoas        String? @map("target_roas")
+
+  // Step 6: Audience & Competitors
+  idealCustomerProfile String  @map("ideal_customer_profile") @db.Text
+  geographicTargeting  String? @map("geographic_targeting")
+  ageRange             String? @map("age_range")
+  genderTargeting      String? @map("gender_targeting")
+  competitors          Json?
+  competitorStrengths  String? @map("competitor_strengths") @db.Text
+
+  // Step 7: Budget & Resources
+  monthlyBudgetRange      String  @map("monthly_budget_range")
+  hasCreativeAssets       Boolean? @map("has_creative_assets")
+  hasMarketingContact     Boolean? @map("has_marketing_contact")
+  marketingContactName    String? @map("marketing_contact_name")
+  marketingContactEmail   String? @map("marketing_contact_email")
+
+  // Metadata
+  onboardingCompleted   Boolean   @default(false) @map("onboarding_completed")
+  onboardingCompletedAt DateTime? @map("onboarding_completed_at")
+  status                String    @default("pending")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links         ClientLink[]
+  activityLogs  ActivityLog[]
+  brandAssets   BrandAsset[]
+  webhookLogs   N8nWebhookLog[]
+
+  @@map("clients")
+}
+
+// =====================================================
+// CLIENT LINKS TABLE
+// =====================================================
+model ClientLink {
+  id          String   @id @default(uuid())
+  clientId    String   @map("client_id")
+
+  linkType    String   @map("link_type") // 'google_doc', 'clickup', 'airtable', 'looker', 'other'
+  title       String
+  url         String   @db.Text
+  description String?  @db.Text
+  icon        String?
+
+  generatedByN8n Boolean @default(true) @map("generated_by_n8n")
+  n8nWorkflowId  String? @map("n8n_workflow_id")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_links")
+}
+
+// =====================================================
+// ACTIVITY LOGS TABLE
+// =====================================================
+model ActivityLog {
+  id                  String   @id @default(uuid())
+  clientId            String?  @map("client_id")
+  userId              String?  @map("user_id")
+
+  activityType        String   @map("activity_type")
+  activityDescription String?  @map("activity_description") @db.Text
+  metadata            Json?
+  ipAddress           String?  @map("ip_address")
+  userAgent           String?  @map("user_agent") @db.Text
+
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  // Relations
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+// =====================================================
+// N8N WEBHOOK LOGS TABLE
+// =====================================================
+model N8nWebhookLog {
+  id              String   @id @default(uuid())
+  clientId        String?  @map("client_id")
+  uniqueClientId  String?  @map("unique_client_id")
+
+  direction       String   // 'outbound' (to N8N) or 'inbound' (from N8N)
+  webhookType     String?  @map("webhook_type")
+
+  payload         Json?
+  status          String?
+  errorMessage    String?  @map("error_message") @db.Text
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  @@map("n8n_webhook_logs")
+}
+
+// =====================================================
+// BRAND ASSETS TABLE (Future Use)
+// =====================================================
+model BrandAsset {
+  id         String   @id @default(uuid())
+  clientId   String   @map("client_id")
+
+  assetType  String   @map("asset_type") // 'logo', 'brand_guide', 'image', 'video'
+  fileName   String   @map("file_name")
+  fileUrl    String   @map("file_url") @db.Text
+  fileSize   Int?     @map("file_size")
+  mimeType   String?  @map("mime_type")
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("brand_assets")
+}
