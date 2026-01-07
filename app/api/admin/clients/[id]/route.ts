@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    const clientId = params.id;
+    const { id: clientId } = await params;
 
     // Get client with all details
     const client = await prisma.client.findUnique({
