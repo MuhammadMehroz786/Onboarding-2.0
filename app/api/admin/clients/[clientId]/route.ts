@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ clientId: string }> }
 ) {
   try {
     const session = await auth();
@@ -30,7 +30,7 @@ export async function GET(
       );
     }
 
-    const { id: clientId } = await params;
+    const { clientId } = await params;
 
     // Get client with all details
     const client = await prisma.client.findUnique({
