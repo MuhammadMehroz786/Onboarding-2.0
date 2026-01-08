@@ -151,7 +151,6 @@ export async function POST(
           webhookType: "onboarding_resent",
           payload: JSON.stringify(webhookPayload),
           status: "success",
-          responseCode: response.status,
         },
       });
 
@@ -187,7 +186,6 @@ export async function POST(
           payload: JSON.stringify(webhookPayload),
           status: "failed",
           errorMessage: webhookError.message,
-          responseCode: webhookError.response?.status || null,
         },
       });
 
