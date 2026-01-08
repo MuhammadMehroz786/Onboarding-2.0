@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { ExternalLink, FileText, List, CheckCircle, Clock, AlertCircle, LogOut, Sparkles, X, Bot, Clipboard, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, FileText, List, CheckCircle, Clock, AlertCircle, LogOut, Sparkles, X, Bot, Clipboard, MessageSquare, CheckCircle2, Target, Mail, Users, BarChart3, Megaphone } from 'lucide-react';
+import SupportChatbot from '@/components/SupportChatbot';
 
 interface ClientLink {
   id: string;
@@ -71,9 +72,14 @@ export default function DashboardPage() {
     }
 
     if (status === 'authenticated') {
+      // Redirect admins to the admin dashboard
+      if (session?.user?.role === 'admin') {
+        router.push('/admin');
+        return;
+      }
       fetchClientData();
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   const fetchClientData = async () => {
     try {
@@ -251,12 +257,12 @@ export default function DashboardPage() {
             <Card>
               <div className="p-8 text-center">
                 <Clock className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Resources Being Generated</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">Preparing Your Documents</h3>
                 <p className="text-slate-600 mb-4">
-                  Your onboarding was successful! Our N8N workflow is currently generating your personalized resources.
+                  Your onboarding was successful! We're now creating your personalized marketing resources.
                 </p>
                 <p className="text-sm text-slate-500">
-                  This typically takes 2-3 minutes. Your resources will appear here automatically once ready.
+                  This typically takes 2-3 minutes. Your documents will appear here automatically once ready.
                 </p>
                 <Button variant="secondary" onClick={fetchClientData} className="mt-6">
                   Refresh Status
@@ -366,22 +372,22 @@ export default function DashboardPage() {
                 <p className="text-slate-600 mb-6">
                   Specialized AI assistants trained on your business context to help with ongoing marketing tasks.
                 </p>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {/* Campaign Brief Generator */}
                   <button
                     onClick={() => router.push('/ai-agents?agent=campaign-brief')}
-                    className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-blue-200"
+                    className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-blue-200"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="bg-blue-500 rounded-lg p-3">
-                        <FileText className="w-6 h-6 text-white" />
+                    <div className="flex items-start gap-3">
+                      <div className="bg-blue-500 rounded-lg p-2.5">
+                        <FileText className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Campaign Brief Generator</h3>
-                        <p className="text-sm text-slate-600 mb-3">Generate comprehensive campaign briefs with strategy, tactics, and timelines</p>
-                        <div className="flex items-center text-blue-600 font-medium text-sm">
+                        <h3 className="font-bold text-slate-900 mb-1">Campaign Brief Generator</h3>
+                        <p className="text-xs text-slate-600 mb-2">Generate campaign briefs with strategy & timelines</p>
+                        <div className="flex items-center text-blue-600 font-medium text-xs">
                           <span>Launch Agent</span>
-                          <Sparkles className="w-4 h-4 ml-2" />
+                          <Sparkles className="w-3 h-3 ml-1" />
                         </div>
                       </div>
                     </div>
@@ -390,18 +396,18 @@ export default function DashboardPage() {
                   {/* SOP Drafter */}
                   <button
                     onClick={() => router.push('/ai-agents?agent=sop-drafter')}
-                    className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-purple-200"
+                    className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-purple-200"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="bg-purple-500 rounded-lg p-3">
-                        <Clipboard className="w-6 h-6 text-white" />
+                    <div className="flex items-start gap-3">
+                      <div className="bg-purple-500 rounded-lg p-2.5">
+                        <Clipboard className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">SOP Drafter</h3>
-                        <p className="text-sm text-slate-600 mb-3">Create detailed Standard Operating Procedures for any process</p>
-                        <div className="flex items-center text-purple-600 font-medium text-sm">
+                        <h3 className="font-bold text-slate-900 mb-1">SOP Drafter</h3>
+                        <p className="text-xs text-slate-600 mb-2">Create detailed Standard Operating Procedures</p>
+                        <div className="flex items-center text-purple-600 font-medium text-xs">
                           <span>Launch Agent</span>
-                          <Sparkles className="w-4 h-4 ml-2" />
+                          <Sparkles className="w-3 h-3 ml-1" />
                         </div>
                       </div>
                     </div>
@@ -410,18 +416,18 @@ export default function DashboardPage() {
                   {/* Content Assistant */}
                   <button
                     onClick={() => router.push('/ai-agents?agent=content-assistant')}
-                    className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-green-200"
+                    className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-green-200"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="bg-green-500 rounded-lg p-3">
-                        <MessageSquare className="w-6 h-6 text-white" />
+                    <div className="flex items-start gap-3">
+                      <div className="bg-green-500 rounded-lg p-2.5">
+                        <MessageSquare className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Content & Messaging Assistant</h3>
-                        <p className="text-sm text-slate-600 mb-3">Generate brand-aligned content and messaging for any channel</p>
-                        <div className="flex items-center text-green-600 font-medium text-sm">
+                        <h3 className="font-bold text-slate-900 mb-1">Content & Messaging</h3>
+                        <p className="text-xs text-slate-600 mb-2">Generate brand-aligned content for any channel</p>
+                        <div className="flex items-center text-green-600 font-medium text-xs">
                           <span>Launch Agent</span>
-                          <Sparkles className="w-4 h-4 ml-2" />
+                          <Sparkles className="w-3 h-3 ml-1" />
                         </div>
                       </div>
                     </div>
@@ -430,18 +436,118 @@ export default function DashboardPage() {
                   {/* QA Compliance Checker */}
                   <button
                     onClick={() => router.push('/ai-agents?agent=qa-compliance')}
-                    className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-orange-200"
+                    className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-orange-200"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="bg-orange-500 rounded-lg p-3">
-                        <CheckCircle2 className="w-6 h-6 text-white" />
+                    <div className="flex items-start gap-3">
+                      <div className="bg-orange-500 rounded-lg p-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">QA & Compliance Checker</h3>
-                        <p className="text-sm text-slate-600 mb-3">Review content for quality, compliance, and brand alignment</p>
-                        <div className="flex items-center text-orange-600 font-medium text-sm">
+                        <h3 className="font-bold text-slate-900 mb-1">QA & Compliance</h3>
+                        <p className="text-xs text-slate-600 mb-2">Review content for quality & compliance</p>
+                        <div className="flex items-center text-orange-600 font-medium text-xs">
                           <span>Launch Agent</span>
-                          <Sparkles className="w-4 h-4 ml-2" />
+                          <Sparkles className="w-3 h-3 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Competitor Analyzer */}
+                  <button
+                    onClick={() => router.push('/ai-agents?agent=competitor-analyzer')}
+                    className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-red-200"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-red-500 rounded-lg p-2.5">
+                        <Target className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900 mb-1">Competitor Analyzer</h3>
+                        <p className="text-xs text-slate-600 mb-2">SWOT analysis & competitive insights</p>
+                        <div className="flex items-center text-red-600 font-medium text-xs">
+                          <span>Launch Agent</span>
+                          <Sparkles className="w-3 h-3 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Email Sequence Builder */}
+                  <button
+                    onClick={() => router.push('/ai-agents?agent=email-sequence')}
+                    className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-cyan-200"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-cyan-500 rounded-lg p-2.5">
+                        <Mail className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900 mb-1">Email Sequence Builder</h3>
+                        <p className="text-xs text-slate-600 mb-2">Create email sequences with subject variations</p>
+                        <div className="flex items-center text-cyan-600 font-medium text-xs">
+                          <span>Launch Agent</span>
+                          <Sparkles className="w-3 h-3 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Buyer Persona Generator */}
+                  <button
+                    onClick={() => router.push('/ai-agents?agent=persona-builder')}
+                    className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-pink-200"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-pink-500 rounded-lg p-2.5">
+                        <Users className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900 mb-1">Buyer Persona Generator</h3>
+                        <p className="text-xs text-slate-600 mb-2">Create detailed personas with journey mapping</p>
+                        <div className="flex items-center text-pink-600 font-medium text-xs">
+                          <span>Launch Agent</span>
+                          <Sparkles className="w-3 h-3 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Reporting & Insights */}
+                  <button
+                    onClick={() => router.push('/ai-agents?agent=reporting-insights')}
+                    className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-indigo-200"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-indigo-500 rounded-lg p-2.5">
+                        <BarChart3 className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900 mb-1">Reporting & Insights</h3>
+                        <p className="text-xs text-slate-600 mb-2">Generate executive summaries & reports</p>
+                        <div className="flex items-center text-indigo-600 font-medium text-xs">
+                          <span>Launch Agent</span>
+                          <Sparkles className="w-3 h-3 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Ad Creative Generator */}
+                  <button
+                    onClick={() => router.push('/ai-agents?agent=ad-creative')}
+                    className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:scale-105 text-left border border-amber-200"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-amber-500 rounded-lg p-2.5">
+                        <Megaphone className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900 mb-1">Ad Creative Generator</h3>
+                        <p className="text-xs text-slate-600 mb-2">Platform-specific ad copy for FB, Google, LinkedIn</p>
+                        <div className="flex items-center text-amber-600 font-medium text-xs">
+                          <span>Launch Agent</span>
+                          <Sparkles className="w-3 h-3 ml-1" />
                         </div>
                       </div>
                     </div>
@@ -527,6 +633,9 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Support Chatbot */}
+      <SupportChatbot />
     </div>
   );
 }

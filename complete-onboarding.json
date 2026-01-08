@@ -1,0 +1,46 @@
+{
+  "email": "james@techlaunch.io",
+  "password": "SecureTech2024!",
+
+  "companyName": "TechLaunch Innovations",
+  "industry": "Technology / SaaS",
+  "websiteUrl": "https://www.techlaunch.io",
+  "companyDescription": "B2B SaaS platform providing project management and collaboration tools for remote teams. We help distributed teams stay organized, communicate effectively, and deliver projects on time.",
+  "employeeCount": "25-50",
+  "businessModel": "B2B SaaS",
+
+  "workedWithAgency": true,
+  "currentChannels": ["Google Ads", "LinkedIn Ads", "Content Marketing", "Email Marketing", "SEO"],
+  "marketingFeedback": "Previous agency focused too heavily on vanity metrics. We need better qualified leads and improved conversion rates. Looking for a data-driven approach with clear ROI.",
+  "primaryChallenges": ["Lead Quality", "High Cost Per Acquisition", "Long Sales Cycle", "Competition from Established Players"],
+
+  "hasGoogleAnalytics": "yes",
+  "hasFacebookPixel": "no",
+  "trackingTools": ["Google Analytics 4", "HubSpot", "Mixpanel", "Hotjar"],
+  "canProvideAnalyticsAccess": "yes",
+  "analyticsNotes": "GA4 fully implemented with custom events. HubSpot CRM tracks full customer journey. Monthly active users around 2,500. Main concern is improving trial-to-paid conversion rate.",
+
+  "socialPlatforms": ["LinkedIn", "Twitter", "YouTube"],
+  "hasFbBusinessManager": "no",
+  "hasGoogleAds": "yes",
+
+  "primaryGoal": "Increase qualified demo requests by 60% and improve trial-to-paid conversion rate from 12% to 20%",
+  "successDefinition": "Success means generating 150+ qualified demos per month with a conversion rate above 18%, while maintaining CAC under $800. We also want to see organic traffic grow by 40% YoY.",
+  "keyMetrics": ["Demo Request Rate", "Trial-to-Paid Conversion", "Cost Per Acquisition", "Customer Lifetime Value", "Monthly Recurring Revenue", "Churn Rate"],
+  "revenueTarget": "$3M ARR by end of year (currently at $1.8M ARR)",
+  "targetCpa": "$650",
+  "targetRoas": "4.5:1",
+
+  "idealCustomerProfile": "Mid-market companies (100-1000 employees) in tech, consulting, and creative industries. Decision makers are typically Operations Managers, Project Directors, or CTOs aged 32-50. They value efficiency, transparency, and team collaboration.",
+  "geographicTargeting": "North America (primary), UK and Western Europe (secondary expansion)",
+  "ageRange": "30-55",
+  "genderTargeting": "All",
+  "competitors": ["Asana", "Monday.com", "ClickUp", "Wrike", "Notion"],
+  "competitorStrengths": "Asana has strong brand recognition and enterprise features. Monday.com excels at visual project tracking. ClickUp offers extensive customization. All have larger marketing budgets and established user bases.",
+
+  "monthlyBudgetRange": "$15,000 - $25,000",
+  "hasCreativeAssets": true,
+  "hasMarketingContact": true,
+  "marketingContactName": "James Rodriguez",
+  "marketingContactEmail": "james@techlaunch.io"
+}

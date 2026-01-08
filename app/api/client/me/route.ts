@@ -10,6 +10,7 @@ export const runtime = 'nodejs';
  */
 export async function GET(request: NextRequest) {
   try {
+    console.log('GET /api/client/me called');
     const session = await auth();
 
     if (!session || !session.user) {

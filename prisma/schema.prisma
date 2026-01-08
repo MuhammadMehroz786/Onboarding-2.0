@@ -1,12 +1,12 @@
 // Onboarding Automation - Prisma Schema
-// Database: SQLite (simplified for MVP)
+// Database: PostgreSQL (production ready)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -100,6 +100,7 @@ model Client {
   brandAssets        BrandAsset[]
   webhookLogs        N8nWebhookLog[]
   generatedDocuments GeneratedDocument[]
+  chatMessages       ChatMessage[]
 
   @@map("clients")
 }
@@ -217,4 +218,27 @@ model GeneratedDocument {
   // Ensure only one document per type per client
   @@unique([clientId, documentType])
   @@map("generated_documents")
+}
+
+// =====================================================
+// CHAT MESSAGES TABLE (Support Chatbot)
+// =====================================================
+model ChatMessage {
+  id        String   @id @default(uuid())
+  clientId  String   @map("client_id")
+
+  role      String   // 'user' or 'assistant'
+  content   String   // The message content
+  
+  // Metadata for admin review
+  isHelpful Boolean? @map("is_helpful") // User feedback on response
+  flagged   Boolean  @default(false)    // Flag for admin attention
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, createdAt])
+  @@map("chat_messages")
 }
