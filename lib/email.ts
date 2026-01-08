@@ -3,80 +3,81 @@ import axios from 'axios';
 const EMAIL_WEBHOOK_URL = 'https://n8n.eventplanners.cloud/webhook/d99e44c8-7d47-4f51-8a30-a12263446eac';
 
 export interface EmailPayload {
-    email: string;
-    subject: string;
-    mailBody: string;
+  email: string;
+  subject: string;
+  mailBody: string;
 }
 
 /**
  * Send email via N8N webhook
  */
 export async function sendEmail(payload: EmailPayload): Promise<boolean> {
-    try {
-        const response = await axios.post(EMAIL_WEBHOOK_URL, {
-            email: payload.email,
-            subject: payload.subject,
-            mailBody: payload.mailBody,
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            timeout: 10000, // 10 second timeout
-        });
+  try {
+    const response = await axios.post(EMAIL_WEBHOOK_URL, {
+      email: payload.email,
+      subject: payload.subject,
+      mailBody: payload.mailBody,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 10000, // 10 second timeout
+    });
 
-        if (response.status >= 200 && response.status < 300) {
-            console.log('Email sent successfully to:', payload.email);
-            return true;
-        }
-
-        console.error('Email webhook returned non-2xx status:', response.status);
-        return false;
-    } catch (error) {
-        console.error('Failed to send email via N8N webhook:', error);
-        return false;
+    if (response.status >= 200 && response.status < 300) {
+      console.log('Email sent successfully to:', payload.email);
+      return true;
     }
+
+    console.error('Email webhook returned non-2xx status:', response.status);
+    return false;
+  } catch (error) {
+    console.error('Failed to send email via N8N webhook:', error);
+    return false;
+  }
 }
 
 /**
  * Send welcome email to new client
  */
 export async function sendWelcomeEmail(
-    email: string,
-    companyName: string,
-    clientName?: string
+  email: string,
+  companyName: string,
+  clientName?: string
 ): Promise<boolean> {
-    const name = clientName || companyName;
-    const dashboardUrl = process.env.NEXTAUTH_URL || 'https://onboarding-20-production.up.railway.app';
+  const name = clientName || companyName;
+  const dashboardUrl = process.env.NEXTAUTH_URL || 'https://onboarding-20-production.up.railway.app';
+  const appName = process.env.APP_NAME || 'AgencyFlow';
 
-    return sendEmail({
-        email,
-        subject: `Welcome to Our Platform, ${companyName}! 🚀`,
-        mailBody: `
+  return sendEmail({
+    email,
+    subject: `Welcome to ${appName}, ${companyName}! 🚀`,
+    mailBody: `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc; }
     .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
-    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; }
+    .header { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 40px 20px; text-align: center; }
     .header h1 { color: #ffffff; margin: 0; font-size: 28px; }
-    .content { padding: 40px 30px; color: #333333; line-height: 1.6; }
-    .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
-    .features { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    .features li { margin: 10px 0; }
-    .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+    .content { padding: 40px 30px; color: #334155; line-height: 1.6; }
+    .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.25); }
+    .features { background: #f1f5f9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6366f1; }
+    .features li { margin: 10px 0; color: #475569; }
+    .footer { background: #f8fafc; padding: 20px; text-align: center; color: #64748b; font-size: 14px; border-top: 1px solid #e2e8f0; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>🎉 Welcome to Our Platform!</h1>
+      <h1>🎉 Welcome to ${appName}!</h1>
     </div>
     <div class="content">
-      <h2>Hi ${name},</h2>
-      <p>Welcome aboard! We're thrilled to have <strong>${companyName}</strong> as part of our platform.</p>
+      <h2 style="color: #1e293b;">Hi ${name},</h2>
+      <p>Welcome aboard! We're thrilled to have <strong>${companyName}</strong> join ${appName}.</p>
       
       <p>Your onboarding is complete, and we're already working on your personalized strategy suite. You'll receive access to:</p>
       
@@ -98,29 +99,30 @@ export async function sendWelcomeEmail(
       <p>Best regards,<br><strong>Your Success Team</strong></p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} Onboarding Platform. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} ${appName}. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>
     `.trim(),
-    });
+  });
 }
 
 /**
  * Send strategy documents ready email
  */
 export async function sendStrategyReadyEmail(
-    email: string,
-    companyName: string,
-    documentCount: number
+  email: string,
+  companyName: string,
+  documentCount: number
 ): Promise<boolean> {
-    const dashboardUrl = process.env.NEXTAUTH_URL || 'https://onboarding-20-production.up.railway.app';
+  const dashboardUrl = process.env.NEXTAUTH_URL || 'https://onboarding-20-production.up.railway.app';
+  const appName = process.env.APP_NAME || 'AgencyFlow';
 
-    return sendEmail({
-        email,
-        subject: `Your ${documentCount} Strategy Documents are Ready! 📄`,
-        mailBody: `
+  return sendEmail({
+    email,
+    subject: `Your ${documentCount} Strategy Documents are Ready! 📄`,
+    mailBody: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -129,10 +131,10 @@ export async function sendStrategyReadyEmail(
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
     .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
-    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 20px; text-align: center; }
+    .header { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 40px 20px; text-align: center; }
     .header h1 { color: #ffffff; margin: 0; font-size: 28px; }
     .content { padding: 40px 30px; color: #333333; line-height: 1.6; }
-    .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+    .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.25); }
     .documents { background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; margin: 20px 0; }
     .documents li { margin: 8px 0; color: #065f46; }
     .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
@@ -170,30 +172,31 @@ export async function sendStrategyReadyEmail(
       <p>Best regards,<br><strong>Your Success Team</strong></p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} Onboarding Platform. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} ${appName}. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>
     `.trim(),
-    });
+  });
 }
 
 /**
  * Send admin notification for new client
  */
 export async function sendAdminNotification(
-    companyName: string,
-    clientEmail: string,
-    uniqueClientId: string
+  companyName: string,
+  clientEmail: string,
+  uniqueClientId: string
 ): Promise<boolean> {
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@agency.com';
-    const dashboardUrl = process.env.NEXTAUTH_URL || 'https://onboarding-20-production.up.railway.app';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@agency.com';
+  const dashboardUrl = process.env.NEXTAUTH_URL || 'https://onboarding-20-production.up.railway.app';
+  const appName = process.env.APP_NAME || 'AgencyFlow';
 
-    return sendEmail({
-        email: adminEmail,
-        subject: `New Client Onboarded: ${companyName}`,
-        mailBody: `
+  return sendEmail({
+    email: adminEmail,
+    subject: `New Client Onboarded: ${companyName}`,
+    mailBody: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -255,11 +258,11 @@ export async function sendAdminNotification(
       <p>Time to deliver an amazing experience! 🚀</p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} Onboarding Platform - Admin Notifications</p>
+      <p>© ${new Date().getFullYear()} ${appName} - Admin Notifications</p>
     </div>
   </div>
 </body>
 </html>
     `.trim(),
-    });
+  });
 }
