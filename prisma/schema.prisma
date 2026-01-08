@@ -101,6 +101,7 @@ model Client {
   webhookLogs        N8nWebhookLog[]
   generatedDocuments GeneratedDocument[]
   chatMessages       ChatMessage[]
+  milestones         Milestone[]
 
   @@map("clients")
 }
@@ -241,4 +242,31 @@ model ChatMessage {
 
   @@index([clientId, createdAt])
   @@map("chat_messages")
+}
+
+// =====================================================
+// MILESTONES TABLE (Progress Tracking)
+// =====================================================
+model Milestone {
+  id          String   @id @default(uuid())
+  clientId    String   @map("client_id")
+  
+  title       String   // e.g., "Complete Brand Assets Upload"
+  description String?  // Additional details
+  dueDate     DateTime? @map("due_date")
+  
+  completed      Boolean   @default(false)
+  completedAt    DateTime? @map("completed_at")
+  
+  aiSuggested    Boolean   @default(false) @map("ai_suggested") // Was this suggested by AI
+  displayOrder   Int       @default(0) @map("display_order")    // For custom ordering
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("milestones")
 }
