@@ -126,15 +126,6 @@ export default function LoginPage() {
             </div>
           </div>
         </Card>
-
-        {/* Demo Credentials Info */}
-        <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-          <p className="text-xs font-semibold text-indigo-900 mb-2">Demo Credentials:</p>
-          <div className="space-y-1 text-xs text-indigo-700">
-            <p><strong>Admin:</strong> admin@agency.com / Admin123!</p>
-            <p><strong>Client:</strong> Use credentials from onboarding</p>
-          </div>
-        </div>
       </div>
     </div>
   );
