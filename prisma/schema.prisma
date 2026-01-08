@@ -1,12 +1,13 @@
 // Onboarding Automation - Prisma Schema
-// Database: PostgreSQL
+// Database: SQLite (simplified for MVP)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 // =====================================================
@@ -40,43 +41,43 @@ model Client {
   companyName        String  @map("company_name")
   industry           String
   websiteUrl         String? @map("website_url")
-  companyDescription String? @map("company_description") @db.Text
+  companyDescription String? @map("company_description")
   employeeCount      String? @map("employee_count")
   businessModel      String? @map("business_model")
 
   // Step 2: Marketing State
   workedWithAgency   Boolean? @map("worked_with_agency")
-  currentChannels    Json?    @map("current_channels")
-  marketingFeedback  String?  @map("marketing_feedback") @db.Text
-  primaryChallenges  Json?    @map("primary_challenges")
+  currentChannels    String?    @map("current_channels")
+  marketingFeedback  String?  @map("marketing_feedback")
+  primaryChallenges  String?    @map("primary_challenges")
 
   // Step 3: Analytics & Tracking
   hasGoogleAnalytics         String? @map("has_google_analytics")
   hasFacebookPixel           String? @map("has_facebook_pixel")
-  trackingTools              Json?   @map("tracking_tools")
+  trackingTools              String?   @map("tracking_tools")
   canProvideAnalyticsAccess  String? @map("can_provide_analytics_access")
-  analyticsNotes             String? @map("analytics_notes") @db.Text
+  analyticsNotes             String? @map("analytics_notes")
 
   // Step 4: Social Media & Platforms
-  socialPlatforms       Json?   @map("social_platforms")
+  socialPlatforms       String?   @map("social_platforms")
   hasFbBusinessManager  String? @map("has_fb_business_manager")
   hasGoogleAds          String? @map("has_google_ads")
 
   // Step 5: Goals & Objectives
-  primaryGoal       String  @map("primary_goal") @db.Text
-  successDefinition String? @map("success_definition") @db.Text
-  keyMetrics        Json?   @map("key_metrics")
+  primaryGoal       String  @map("primary_goal")
+  successDefinition String? @map("success_definition")
+  keyMetrics        String?   @map("key_metrics")
   revenueTarget     String? @map("revenue_target")
   targetCpa         String? @map("target_cpa")
   targetRoas        String? @map("target_roas")
 
   // Step 6: Audience & Competitors
-  idealCustomerProfile String  @map("ideal_customer_profile") @db.Text
+  idealCustomerProfile String  @map("ideal_customer_profile")
   geographicTargeting  String? @map("geographic_targeting")
   ageRange             String? @map("age_range")
   genderTargeting      String? @map("gender_targeting")
-  competitors          Json?
-  competitorStrengths  String? @map("competitor_strengths") @db.Text
+  competitors          String?
+  competitorStrengths  String? @map("competitor_strengths")
 
   // Step 7: Budget & Resources
   monthlyBudgetRange      String  @map("monthly_budget_range")
@@ -93,11 +94,12 @@ model Client {
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  links         ClientLink[]
-  activityLogs  ActivityLog[]
-  brandAssets   BrandAsset[]
-  webhookLogs   N8nWebhookLog[]
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links              ClientLink[]
+  activityLogs       ActivityLog[]
+  brandAssets        BrandAsset[]
+  webhookLogs        N8nWebhookLog[]
+  generatedDocuments GeneratedDocument[]
 
   @@map("clients")
 }
@@ -111,8 +113,8 @@ model ClientLink {
 
   linkType    String   @map("link_type") // 'google_doc', 'clickup', 'airtable', 'looker', 'other'
   title       String
-  url         String   @db.Text
-  description String?  @db.Text
+  url         String  
+  description String? 
   icon        String?
 
   generatedByN8n Boolean @default(true) @map("generated_by_n8n")
@@ -136,10 +138,10 @@ model ActivityLog {
   userId              String?  @map("user_id")
 
   activityType        String   @map("activity_type")
-  activityDescription String?  @map("activity_description") @db.Text
-  metadata            Json?
+  activityDescription String?  @map("activity_description")
+  metadata            String?
   ipAddress           String?  @map("ip_address")
-  userAgent           String?  @map("user_agent") @db.Text
+  userAgent           String?  @map("user_agent")
 
   createdAt           DateTime @default(now()) @map("created_at")
 
@@ -161,9 +163,9 @@ model N8nWebhookLog {
   direction       String   // 'outbound' (to N8N) or 'inbound' (from N8N)
   webhookType     String?  @map("webhook_type")
 
-  payload         Json?
+  payload         String?
   status          String?
-  errorMessage    String?  @map("error_message") @db.Text
+  errorMessage    String?  @map("error_message")
 
   createdAt       DateTime @default(now()) @map("created_at")
 
@@ -182,7 +184,7 @@ model BrandAsset {
 
   assetType  String   @map("asset_type") // 'logo', 'brand_guide', 'image', 'video'
   fileName   String   @map("file_name")
-  fileUrl    String   @map("file_url") @db.Text
+  fileUrl    String   @map("file_url")
   fileSize   Int?     @map("file_size")
   mimeType   String?  @map("mime_type")
 
@@ -192,4 +194,27 @@ model BrandAsset {
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@map("brand_assets")
+}
+
+// =====================================================
+// GENERATED DOCUMENTS TABLE
+// =====================================================
+model GeneratedDocument {
+  id           String   @id @default(uuid())
+  clientId     String   @map("client_id")
+
+  documentType String   @map("document_type") // 'gtm-strategy', 'positioning', etc.
+  title        String
+  content      String   // The actual markdown content
+  wordCount    Int?     @map("word_count")
+
+  generatedAt  DateTime @default(now()) @map("generated_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  // Ensure only one document per type per client
+  @@unique([clientId, documentType])
+  @@map("generated_documents")
 }

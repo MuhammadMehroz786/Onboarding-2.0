@@ -1,28 +1,18 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Prisma 7 requires an adapter to be passed to PrismaClient constructor
+// SQLite with Prisma 7 - pass empty options object
 const createPrismaClient = () => {
   // Skip Prisma initialization during Next.js build phase
   if (process.env.NEXT_PHASE === 'phase-production-build') {
     return {} as PrismaClient
   }
 
-  // Create PostgreSQL connection pool
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
-  })
-
-  // Create Prisma adapter
-  const adapter = new PrismaPg(pool)
-
-  // Return PrismaClient with adapter
-  return new PrismaClient({ adapter })
+  // Prisma 7 requires options object, even if empty
+  return new PrismaClient({})
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()

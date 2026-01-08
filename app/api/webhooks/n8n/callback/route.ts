@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         uniqueClientId: client.uniqueClientId,
         direction: "inbound",
         webhookType: "links_generated",
-        payload: payload,
+        payload: JSON.stringify(payload),
         status: "success",
       },
     });
@@ -125,10 +125,10 @@ export async function POST(request: NextRequest) {
         clientId: client.id,
         activityType: "links_generated",
         activityDescription: `Generated ${createdLinks.length} resource links via N8N`,
-        metadata: {
+        metadata: JSON.stringify({
           linkCount: createdLinks.length,
           linkTypes: createdLinks.map((l: any) => l.linkType),
-        },
+        }),
       },
     });
 
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
             uniqueClientId: payload.uniqueClientId || null,
             direction: "inbound",
             webhookType: "links_generated",
-            payload: payload,
+            payload: JSON.stringify(payload),
             status: "failed",
             errorMessage: error.message,
           },

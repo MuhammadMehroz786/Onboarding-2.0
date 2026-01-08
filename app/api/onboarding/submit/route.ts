@@ -63,40 +63,40 @@ export async function POST(request: NextRequest) {
 
           // Step 2: Marketing State
           workedWithAgency: data.workedWithAgency || null,
-          currentChannels: data.currentChannels || null,
+          currentChannels: data.currentChannels ? JSON.stringify(data.currentChannels) : null,
           marketingFeedback: data.marketingFeedback || null,
-          primaryChallenges: data.primaryChallenges || null,
+          primaryChallenges: data.primaryChallenges ? JSON.stringify(data.primaryChallenges) : null,
 
           // Step 3: Analytics & Tracking
           hasGoogleAnalytics: data.hasGoogleAnalytics || null,
           hasFacebookPixel: data.hasFacebookPixel || null,
-          trackingTools: data.trackingTools || null,
+          trackingTools: data.trackingTools ? JSON.stringify(data.trackingTools) : null,
           canProvideAnalyticsAccess: data.canProvideAnalyticsAccess || null,
           analyticsNotes: data.analyticsNotes || null,
 
           // Step 4: Social Media & Platforms
-          socialPlatforms: data.socialPlatforms || null,
+          socialPlatforms: data.socialPlatforms ? JSON.stringify(data.socialPlatforms) : null,
           hasFbBusinessManager: data.hasFbBusinessManager || null,
           hasGoogleAds: data.hasGoogleAds || null,
 
           // Step 5: Goals & Objectives
-          primaryGoal: data.primaryGoal,
+          primaryGoal: data.primaryGoal || 'Not specified',
           successDefinition: data.successDefinition || null,
-          keyMetrics: data.keyMetrics || null,
+          keyMetrics: data.keyMetrics ? JSON.stringify(data.keyMetrics) : null,
           revenueTarget: data.revenueTarget || null,
           targetCpa: data.targetCpa || null,
           targetRoas: data.targetRoas || null,
 
           // Step 6: Audience & Competitors
-          idealCustomerProfile: data.idealCustomerProfile,
+          idealCustomerProfile: data.idealCustomerProfile || 'Not specified',
           geographicTargeting: data.geographicTargeting || null,
           ageRange: data.ageRange || null,
           genderTargeting: data.genderTargeting || null,
-          competitors: data.competitors || null,
+          competitors: data.competitors ? JSON.stringify(data.competitors) : null,
           competitorStrengths: data.competitorStrengths || null,
 
           // Step 7: Budget & Resources
-          monthlyBudgetRange: data.monthlyBudgetRange,
+          monthlyBudgetRange: data.monthlyBudgetRange || 'Not specified',
           hasCreativeAssets: data.hasCreativeAssets || null,
           hasMarketingContact: data.hasMarketingContact || null,
           marketingContactName: data.marketingContactName || null,
@@ -213,7 +213,7 @@ async function sendToN8N(webhookUrl: string, payload: any) {
         clientId: payload.clientId,
         direction: "outbound",
         webhookType: "onboarding_complete",
-        payload: payload,
+        payload: JSON.stringify(payload),
         status: "success",
       },
     });
@@ -227,7 +227,7 @@ async function sendToN8N(webhookUrl: string, payload: any) {
         clientId: payload.clientId,
         direction: "outbound",
         webhookType: "onboarding_complete",
-        payload: payload,
+        payload: JSON.stringify(payload),
         status: "failed",
         errorMessage: error.message,
       },
