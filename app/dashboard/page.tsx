@@ -249,6 +249,109 @@ export default function DashboardPage() {
           </div>
         </Card>
 
+        {/* Progress Tracking */}
+        <Card className="mb-6">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-indigo-600" />
+                <h2 className="text-xl font-semibold text-slate-900">Your Onboarding Progress</h2>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-indigo-600">
+                  {Math.round((links.length / 15) * 100)}%
+                </p>
+                <p className="text-xs text-slate-500">Complete</p>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-6">
+              <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${Math.min((links.length / 15) * 100, 100)}%` }}
+                ></div>
+              </div>
+              <p className="text-sm text-slate-600 mt-2">
+                {links.length} of 15 strategy documents delivered
+              </p>
+            </div>
+
+            {/* Deliverables Checklist */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  Completed ({links.length})
+                </h3>
+                <div className="space-y-2">
+                  {links.length > 0 ? (
+                    links.slice(0, 5).map((link) => (
+                      <div key={link.id} className="flex items-start gap-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-700">{link.title}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500 italic">No documents yet</p>
+                  )}
+                  {links.length > 5 && (
+                    <p className="text-xs text-slate-500 pl-6">
+                      + {links.length - 5} more documents
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-600" />
+                  Pending ({15 - links.length})
+                </h3>
+                <div className="space-y-2">
+                  {links.length < 15 ? (
+                    AVAILABLE_DOCUMENTS.filter(doc =>
+                      !links.some(link => link.title.toLowerCase().includes(doc.title.toLowerCase().split(' ')[0]))
+                    ).slice(0, 5).map((doc) => (
+                      <div key={doc.id} className="flex items-start gap-2 text-sm">
+                        <Clock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-600">{doc.title}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-green-600 italic flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      All deliverables complete!
+                    </p>
+                  )}
+                  {(15 - links.length) > 5 && (
+                    <p className="text-xs text-slate-500 pl-6">
+                      + {(15 - links.length) - 5} more pending
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Action */}
+            {links.length < 15 && (
+              <div className="mt-6 pt-6 border-t border-slate-200">
+                <p className="text-sm text-slate-600 mb-3">
+                  Want to speed up your progress? Generate additional documents below.
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 border border-indigo-200">
+                    <p className="text-xs font-medium text-indigo-900">
+                      💡 Tip: Each document is AI-generated based on your business goals and takes 20-30 seconds.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+
         {/* Generated Resources */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">Your Generated Resources</h2>
