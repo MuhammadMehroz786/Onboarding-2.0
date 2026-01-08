@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * N8N Callback Webhook
  * Receives generated links from N8N automation

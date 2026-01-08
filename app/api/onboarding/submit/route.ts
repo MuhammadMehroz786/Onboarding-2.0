@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, generateUniqueClientId } from "@/lib/auth-utils";
 import axios from "axios";
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
