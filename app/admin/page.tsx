@@ -17,7 +17,9 @@ import {
   ChevronDown,
   ChevronUp,
   Building2,
-  Link as LinkIcon
+  Link as LinkIcon,
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 
 interface Client {
@@ -67,6 +69,8 @@ export default function AdminPage() {
   const [expandedClientId, setExpandedClientId] = useState<string | null>(null);
   const [expandedClientData, setExpandedClientData] = useState<ClientDetails | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [resendingN8n, setResendingN8n] = useState(false);
+  const [deletingClient, setDeletingClient] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -178,6 +182,109 @@ export default function AdminPage() {
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
+  };
+
+  const handleResendN8n = async (clientId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!confirm('Resend this client\'s data to N8N to regenerate documents?')) {
+      return;
+    }
+
+    setResendingN8n(true);
+    try {
+      const response = await fetch(`/api/admin/clients/${clientId}/resend-n8n`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to resend to N8N');
+      }
+
+      const data = await response.json();
+      alert(`✅ Success! Client data sent to N8N. Documents should arrive within a few minutes.`);
+
+      // Refresh client list
+      await fetchClients();
+
+      // If this client is expanded, reload their details
+      if (expandedClientId === clientId) {
+        await toggleClientDetails(clientId);
+        await toggleClientDetails(clientId);
+      }
+    } catch (error: any) {
+      alert(`❌ Error: ${error.message}`);
+    } finally {
+      setResendingN8n(false);
+    }
+  };
+
+  const handleDeleteClient = async (clientId: string, companyName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    const confirmed = confirm(
+      `⚠️ WARNING: This will permanently delete "${companyName}" and ALL associated data:\n\n` +
+      `• Client profile\n` +
+      `• User account\n` +
+      `• Generated links\n` +
+      `• Activity logs\n` +
+      `• Documents\n` +
+      `• Chat history\n\n` +
+      `This action CANNOT be undone.\n\n` +
+      `Type the company name to confirm deletion.`
+    );
+
+    if (!confirmed) return;
+
+    const typedName = prompt(`Type "${companyName}" to confirm deletion:`);
+    if (typedName !== companyName) {
+      alert('Company name does not match. Deletion cancelled.');
+      return;
+    }
+
+    setDeletingClient(true);
+    try {
+      const response = await fetch(`/api/admin/clients/${clientId}/delete`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete client');
+      }
+
+      alert(`✅ Client "${companyName}" has been permanently deleted.`);
+
+      // Collapse details if this client was expanded
+      if (expandedClientId === clientId) {
+        setExpandedClientId(null);
+        setExpandedClientData(null);
+      }
+
+      // Refresh client list
+      await fetchClients();
+    } catch (error: any) {
+      alert(`❌ Error: ${error.message}`);
+    } finally {
+      setDeletingClient(false);
+    }
+  };
+
+  // Helper function to check if client needs N8N resend
+  const shouldShowResendButton = (client: Client) => {
+    // Show if no links
+    if (client.linkCount === 0) return true;
+
+    // Show if pending and onboarded more than 10 minutes ago
+    if (client.status === 'pending' && client.onboardingCompletedAt) {
+      const completedAt = new Date(client.onboardingCompletedAt).getTime();
+      const now = Date.now();
+      const tenMinutes = 10 * 60 * 1000;
+      return (now - completedAt) > tenMinutes;
+    }
+
+    return false;
   };
 
   if (loading || status === 'loading') {
@@ -419,6 +526,64 @@ export default function AdminPage() {
                                           <p className="text-slate-500">Created</p>
                                           <p className="font-medium text-slate-900">
                                             {new Date(expandedClientData.createdAt).toLocaleDateString()}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Admin Action Buttons - Full Width */}
+                                    <div className="col-span-3 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg p-6 shadow-sm border-2 border-slate-200">
+                                      <h3 className="font-semibold text-slate-900 mb-4">Admin Actions</h3>
+                                      <div className="flex items-center gap-4">
+                                        {/* Resend to N8N Button */}
+                                        {shouldShowResendButton(client) && (
+                                          <div className="flex-1">
+                                            <Button
+                                              onClick={(e) => handleResendN8n(expandedClientData.id, e)}
+                                              disabled={resendingN8n}
+                                              className="w-full bg-yellow-600 hover:bg-yellow-700 text-white flex items-center justify-center gap-2"
+                                            >
+                                              {resendingN8n ? (
+                                                <>
+                                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                                  Sending...
+                                                </>
+                                              ) : (
+                                                <>
+                                                  <RefreshCw className="w-4 h-4" />
+                                                  Resend to N8N
+                                                </>
+                                              )}
+                                            </Button>
+                                            <p className="text-xs text-slate-600 mt-2">
+                                              {expandedClientData.linkCount === 0
+                                                ? '⚠️ No resources generated yet. Click to resend data to N8N.'
+                                                : '⚠️ Still pending after 10+ minutes. Click to retry document generation.'}
+                                            </p>
+                                          </div>
+                                        )}
+
+                                        {/* Delete Client Button */}
+                                        <div className={shouldShowResendButton(client) ? 'flex-1' : 'w-full'}>
+                                          <Button
+                                            onClick={(e) => handleDeleteClient(expandedClientData.id, expandedClientData.companyName, e)}
+                                            disabled={deletingClient}
+                                            className="w-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2"
+                                          >
+                                            {deletingClient ? (
+                                              <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                                Deleting...
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete Client
+                                              </>
+                                            )}
+                                          </Button>
+                                          <p className="text-xs text-slate-600 mt-2">
+                                            ⚠️ Permanently removes client and all data. Cannot be undone.
                                           </p>
                                         </div>
                                       </div>
