@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, generateUniqueClientId } from "@/lib/auth-utils";
+import { sendWelcomeEmail, sendAdminNotification } from "@/lib/email";
 import axios from "axios";
 
 export const dynamic = 'force-dynamic';
@@ -179,6 +180,23 @@ export async function POST(request: NextRequest) {
         console.error("Failed to send to N8N:", error);
       });
     }
+
+    // Send welcome email to client (async, don't block)
+    sendWelcomeEmail(
+      data.email,
+      data.companyName
+    ).catch((error) => {
+      console.error("Failed to send welcome email:", error);
+    });
+
+    // Send admin notification (async, don't block)
+    sendAdminNotification(
+      data.companyName,
+      data.email,
+      uniqueClientId
+    ).catch((error) => {
+      console.error("Failed to send admin notification:", error);
+    });
 
     return NextResponse.json({
       success: true,
