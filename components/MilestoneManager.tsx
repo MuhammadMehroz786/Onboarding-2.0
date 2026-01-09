@@ -11,7 +11,8 @@ import {
     Calendar,
     Edit2,
     X,
-    Save
+    Save,
+    Gift
 } from 'lucide-react';
 
 interface Milestone {
@@ -35,6 +36,7 @@ export function MilestoneManager({ clientId, companyName }: MilestoneManagerProp
     const [milestones, setMilestones] = useState<Milestone[]>([]);
     const [loading, setLoading] = useState(true);
     const [suggesting, setSuggesting] = useState(false);
+    const [giftRecommending, setGiftRecommending] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -149,6 +151,28 @@ export function MilestoneManager({ clientId, companyName }: MilestoneManagerProp
         }
     };
 
+    const handleGiftRecommendation = async () => {
+        try {
+            setGiftRecommending(true);
+            const response = await fetch('/api/admin/gift-recommendation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clientId }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert(`Gift recommendation sent to your email!\n\nSuggested: ${data.recommendation.giftName}\n${data.recommendation.description}\n\nEstimated Cost: ${data.recommendation.estimatedCost}`);
+            }
+        } catch (error) {
+            console.error('Error generating gift recommendation:', error);
+            alert('Failed to generate gift recommendation');
+        } finally {
+            setGiftRecommending(false);
+        }
+    };
+
+
     const completedCount = milestones.filter(m => m.completed).length;
     const totalCount = milestones.length;
     const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -196,6 +220,23 @@ export function MilestoneManager({ clientId, companyName }: MilestoneManagerProp
                             )}
                         </Button>
                     )}
+                    <Button
+                        onClick={handleGiftRecommendation}
+                        disabled={giftRecommending}
+                        className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white flex items-center gap-2"
+                    >
+                        {giftRecommending ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <Gift className="w-4 h-4" />
+                                Suggest Welcome Gift
+                            </>
+                        )}
+                    </Button>
                     <Button
                         onClick={() => setShowAddForm(!showAddForm)}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white"
@@ -297,8 +338,8 @@ export function MilestoneManager({ clientId, companyName }: MilestoneManagerProp
                         <div
                             key={milestone.id}
                             className={`p-4 rounded-lg border-2 transition-all ${milestone.completed
-                                    ? 'bg-green-50 border-green-200'
-                                    : 'bg-white border-slate-200 hover:border-indigo-300'
+                                ? 'bg-green-50 border-green-200'
+                                : 'bg-white border-slate-200 hover:border-indigo-300'
                                 }`}
                         >
                             <div className="flex items-start gap-3">
