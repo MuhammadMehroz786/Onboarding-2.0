@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { MilestoneManager } from '@/components/MilestoneManager';
 import {
   Users,
   Search,
@@ -767,6 +768,14 @@ export default function AdminPage() {
                                       ) : (
                                         <p className="text-slate-500 text-sm">No resources generated yet.</p>
                                       )}
+                                    </div>
+
+                                    {/* Milestones & Progress Tracking */}
+                                    <div className="col-span-3">
+                                      <MilestoneManager
+                                        clientId={expandedClientData.id}
+                                        companyName={expandedClientData.companyName}
+                                      />
                                     </div>
                                   </div>
                                 </div>
